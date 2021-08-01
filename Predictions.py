@@ -16,6 +16,7 @@ with open("train.csv") as trainFile:
         totalData.append(data)
         totalY.append(y)
 
+print("Learning")
 
 testData = totalData[round(len(totalData)*0.7):]
 testY = totalY[round(len(totalY)*0.7):]
@@ -32,6 +33,7 @@ model.fit(X,y)
 
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
+
 '''
 model = ensemble.AdaBoostClassifier(n_estimators=1000,learning_rate=1.7)
 print("AdaBoost")
@@ -42,7 +44,7 @@ model.fit(X,y)
 
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
-'''
+
 model = ensemble.BaggingClassifier()
 print("Bagging")
 X = np.asarray(trainingData)
@@ -52,7 +54,7 @@ model.fit(X,y)
 
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
-'''
+
 model = ensemble.GradientBoostingClassifier(n_estimators=1000,loss="exponential",learning_rate=0.45)
 print("GradientBoost")
 X = np.asarray(trainingData)
@@ -62,7 +64,7 @@ model.fit(X,y)
 
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
-'''
+
 
 model = ensemble.RandomForestClassifier(n_estimators=100,max_samples=5000,criterion="entropy",max_features="auto")
 print("RandomForest")
@@ -73,7 +75,7 @@ model.fit(X,y)
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
 
-'''
+
 model = naive_bayes.MultinomialNB()
 print("Multinomial")
 X = np.asarray(trainingData)
@@ -114,8 +116,8 @@ model.fit(X,y)
 
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
-'''
-model = svm.SVC(kernel="linear")
+
+model = svm.SVC()
 print("SVC")
 X = np.asarray(trainingData)
 y = np.asarray(trainingY)
@@ -125,7 +127,7 @@ model.fit(X,y)
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
 
-model = linear_model.LogisticRegression(max_iter=5000)
+model = linear_model.LogisticRegression(max_iter=10000)
 print("LogisticRegression")
 X = np.asarray(trainingData)
 y = np.asarray(trainingY)
@@ -145,7 +147,7 @@ model.fit(X,y)
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
 
-model = neighbors.KNeighborsClassifier(n_neighbors=10)
+model = neighbors.KNeighborsClassifier(n_neighbors=100)
 print("NearestNeighbors")
 X = np.asarray(trainingData)
 y = np.asarray(trainingY)
@@ -154,3 +156,23 @@ model.fit(X,y)
 
 print("Train: ", metrics.accuracy_score(trainingY,model.predict(trainingData)))
 print("Test: ", metrics.accuracy_score(testY,model.predict(Xtest)))
+'''
+print("Predicting")
+with open("test.csv") as testFile:
+    i = 0
+    testData = []
+    for line in testFile:
+        i += 1
+        if i == 1:
+            continue
+        dataPoint = line.strip('\n').split(',')
+        data = list(map(int,dataPoint))
+        testData.append(data)
+
+print("Writing")
+with open("submit.csv","w") as submitFile:
+    submitFile.write('ImageId,Label\n')
+    prediction = model.predict(testData)
+    for j in range(len(testData)):
+        line = str(j+1) + "," + str(prediction[j]) + "\n"
+        submitFile.write(line)

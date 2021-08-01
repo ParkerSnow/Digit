@@ -8,6 +8,8 @@ install.packages("ggcorrplot")
 library(ggplot2)
 library(ggcorrplot)
 
-cor <- round(cor(train),1)
+train <- subset(train,label == 1)
+
+corr <- round(cor(train),1)
 
 ggcorrplot(corr)
