@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 print(tf.__version__)
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
+#Load the data
 train_data = pd.read_csv("train.csv")
 
 test_data = pd.read_csv("test.csv")
@@ -22,11 +23,12 @@ test_data_x = np.expand_dims(test_data_x,axis=-1)/255.0
 
 print(test_data_x[0].shape)
 
+#Split the Data for Testing and Training
 X_train, X_test, y_train, y_test = train_test_split(train_data_x,train_data_y,
                                                     test_size=0.2,train_size=0.8,
                                                     shuffle=True,random_state=40)
 
-
+#Create the Neural Network Model
 model = tf.keras.Sequential([
     tf.keras.layers.Conv2D(32, (5,5), padding = 'same', activation='relu', input_shape=(28,28,1)),
     tf.keras.layers.Conv2D(32, (5,5), padding = 'same', activation='relu'),
@@ -45,14 +47,16 @@ model = tf.keras.Sequential([
 
 model.summary()
 
+#Compile the model
 model.compile(
     optimizer='adam',
     loss="sparse_categorical_crossentropy",
     metrics=['accuracy'])
 
+#Train the neural network
 model.fit(X_train,y_train,epochs=30, validation_data=(X_test,y_test),shuffle=True,use_multiprocessing=True)
 
-
+#Create a submission file with the trained neural network
 with open("submit.csv","w") as submitFile:
     count = 1
     submitFile.write("ImageId,Label\n")
